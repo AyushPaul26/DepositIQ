@@ -1,5 +1,5 @@
 import React from 'react';
-import { Cpu, Layers, GitBranch, Binary, Activity, Sparkles, CheckCircle2, Download } from 'lucide-react';
+import { Cpu, Layers, GitBranch, Activity, Sparkles, CheckCircle2, Download } from 'lucide-react';
 
 interface HeaderProps {
   currentStage: number;
@@ -16,56 +16,55 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const stages = [
     { id: 1, label: 'Stage 1: Predict', sub: 'QML vs Classical ML', icon: Activity },
-    { id: 2, label: 'Stage 2: Select', sub: 'QUBO / QAOA Optimization', icon: Layers },
-    { id: 3, label: 'Stage 3: Simulate', sub: '6-Qubit Quantum Circuit', icon: Cpu },
+    { id: 2, label: 'Stage 2: Select', sub: 'QUBO / QAOA 3D Arena', icon: Layers },
+    { id: 3, label: 'Stage 3: Simulate', sub: '6-Qubit Quantum Studio', icon: Cpu },
     { id: 4, label: 'Submission & PRD', sub: 'CSVs & Technical Report', icon: Download },
   ];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-cyan-500/15 bg-slate-950/85 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo & Hackathon Tag */}
+          {/* Logo & Challenge Badge */}
           <div className="flex items-center gap-3">
-            <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/30 border border-cyan-400/40 shadow-lg shadow-cyan-500/10">
-              <Sparkles className="w-5 h-5 text-cyan-400 animate-pulse" />
-              <div className="absolute -inset-0.5 rounded-xl bg-cyan-400/20 blur-sm -z-10" />
+            <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 text-white font-black text-base shadow-md shadow-orange-500/20 font-mono">
+              ψ
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-lg font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-200 to-indigo-300 font-mono">
+                <span className="text-lg font-black tracking-tight text-slate-900 font-mono">
                   DepositIQ
                 </span>
-                <span className="px-1.5 py-0.5 text-[10px] font-mono uppercase tracking-wider rounded bg-cyan-950 text-cyan-400 border border-cyan-800/80">
+                <span className="px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider rounded-md bg-orange-100 text-orange-800 border border-orange-200">
                   ATOMIQ Hackathon
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 hidden sm:block">
-                Hybrid Quantum-Classical Term Deposit Campaign Pipeline
+              <p className="text-[11px] text-slate-500 hidden sm:block">
+                Hybrid Quantum-Classical Term Deposit Pipeline
               </p>
             </div>
           </div>
 
-          {/* Quick Realtime KPIs */}
-          <div className="hidden lg:flex items-center gap-6 text-xs font-mono">
-            <div className="flex items-center gap-2 bg-slate-900/60 px-3 py-1.5 rounded-lg border border-slate-800">
-              <span className="text-slate-400">Target Selection:</span>
-              <span className={`font-bold ${selectedCount === 6 ? 'text-emerald-400' : 'text-amber-400'}`}>
+          {/* Realtime KPI Badges */}
+          <div className="hidden lg:flex items-center gap-4 text-xs font-mono">
+            <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
+              <span className="text-slate-500">Target Selection:</span>
+              <span className={`font-bold ${selectedCount === 6 ? 'text-emerald-700' : 'text-amber-700'}`}>
                 {selectedCount}/6 Customers
               </span>
-              {selectedCount === 6 && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />}
+              {selectedCount === 6 && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />}
             </div>
 
-            <div className="flex items-center gap-2 bg-slate-900/60 px-3 py-1.5 rounded-lg border border-slate-800">
-              <span className="text-slate-400">P(K ≥ 3):</span>
-              <span className="font-bold text-cyan-400">
+            <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
+              <span className="text-slate-500">P(K ≥ 3):</span>
+              <span className="font-bold text-orange-700">
                 {(simulatedSuccessProb * 100).toFixed(1)}%
               </span>
             </div>
 
-            <div className="flex items-center gap-1.5 text-slate-400">
-              <GitBranch className="w-3.5 h-3.5 text-indigo-400" />
-              <span className="text-indigo-300">branch: ayush</span>
+            <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600">
+              <GitBranch className="w-3.5 h-3.5 text-orange-600" />
+              <span>branch: <strong className="text-slate-900">ayush</strong></span>
             </div>
           </div>
         </div>
@@ -79,24 +78,24 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 key={stg.id}
                 onClick={() => setCurrentStage(stg.id)}
-                className={`flex items-center gap-2.5 px-4 py-2 rounded-lg text-left transition-all duration-200 whitespace-nowrap text-xs font-medium ${
+                className={`flex items-center gap-2.5 px-4 py-2 rounded-xl text-left transition-all duration-200 whitespace-nowrap text-xs ${
                   isActive
-                    ? 'bg-gradient-to-r from-cyan-500/20 to-blue-600/20 text-cyan-200 border border-cyan-400/50 shadow-md shadow-cyan-500/10'
-                    : 'bg-slate-900/40 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-slate-800/80'
+                    ? 'bg-gradient-to-r from-orange-600 to-amber-600 text-white font-bold shadow-md shadow-orange-500/20'
+                    : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200/80 shadow-sm'
                 }`}
               >
                 <div
-                  className={`p-1.5 rounded-md ${
-                    isActive ? 'bg-cyan-500 text-slate-950 font-bold' : 'bg-slate-800 text-slate-400'
+                  className={`p-1.5 rounded-lg ${
+                    isActive ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
                   }`}
                 >
                   <Icon className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <div className="font-semibold text-slate-200 flex items-center gap-1">
+                  <div className={`font-semibold ${isActive ? 'text-white' : 'text-slate-800'}`}>
                     {stg.label}
                   </div>
-                  <div className="text-[10px] text-slate-400 font-normal">
+                  <div className={`text-[10px] font-normal ${isActive ? 'text-orange-100' : 'text-slate-500'}`}>
                     {stg.sub}
                   </div>
                 </div>
@@ -108,4 +107,3 @@ export const Header: React.FC<HeaderProps> = ({
     </header>
   );
 };
-

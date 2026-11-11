@@ -55,7 +55,7 @@ export function App() {
   });
 
   return (
-    <div className="min-h-screen bg-[#040711] text-slate-100 quantum-grid-bg flex flex-col justify-between selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 studio-grid-bg flex flex-col justify-between selection:bg-orange-500/20 selection:text-orange-900">
       <div>
         <Header
           currentStage={currentStage}
@@ -101,18 +101,18 @@ export function App() {
         </main>
       </div>
 
-      {/* Cybernetic Footer */}
-      <footer className="border-t border-slate-900 bg-slate-950/70 py-6 mt-12 text-xs font-mono text-slate-500">
+      {/* Architectural Studio Footer */}
+      <footer className="border-t border-slate-200 bg-white/80 py-6 mt-12 text-xs font-mono text-slate-500 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-cyan-400" />
-            <span className="text-slate-300 font-bold">DepositIQ</span>
-            <span>— The ATOMIQ Hackathon Challenge Pipeline</span>
+            <span className="w-2 h-2 rounded-full bg-orange-500" />
+            <span className="text-slate-800 font-bold">DepositIQ</span>
+            <span>— The ATOMIQ Hackathon Technical Challenge</span>
           </div>
-          <div className="flex items-center gap-4 text-slate-400">
-            <span>Branch: <span className="text-indigo-400 font-semibold">ayush</span></span>
-            <span>Repository: <span className="text-cyan-400">Mayank2177/DepositIQ</span></span>
-            <span>Qiskit / Three.js / WebGL</span>
+          <div className="flex items-center gap-4 text-slate-600">
+            <span>Branch: <strong className="text-orange-700">ayush</strong></span>
+            <span>Repository: <strong className="text-slate-900">Mayank2177/DepositIQ</strong></span>
+            <span>Three.js / React 18 / WebGL</span>
           </div>
         </div>
       </footer>
@@ -121,4 +121,3 @@ export function App() {
 }
 
 export default App;
-

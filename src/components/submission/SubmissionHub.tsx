@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PredictionResult, CandidateCustomer, SimulationResult, Stage2Constraints } from '../../types';
 import { calculateRyAngle } from '../../utils/quantumMath';
-import { Download, FileText, CheckCircle2, Copy, Sparkles, Shield, Cpu, Code2 } from 'lucide-react';
+import { Download, FileText, CheckCircle2, Copy, Sparkles } from 'lucide-react';
 
 interface SubmissionHubProps {
   predictions: PredictionResult[];
@@ -20,7 +20,6 @@ export const SubmissionHub: React.FC<SubmissionHubProps> = ({
 }) => {
   const [copiedFile, setCopiedFile] = useState<string | null>(null);
 
-  // Generate Stage 1 CSV content
   const stage1Csv = React.useMemo(() => {
     let rows = ['customer_id,predicted_probability,rank,is_top_10'];
     predictions.forEach((p) => {
@@ -29,7 +28,6 @@ export const SubmissionHub: React.FC<SubmissionHubProps> = ({
     return rows.join('\n');
   }, [predictions]);
 
-  // Generate Stage 2 CSV content
   const stage2Csv = React.useMemo(() => {
     let rows = [
       '# Stage 2 Optimization Results',
@@ -61,7 +59,6 @@ export const SubmissionHub: React.FC<SubmissionHubProps> = ({
     return rows.join('\n');
   }, [candidates, selectedCustomers, constraints]);
 
-  // Generate Stage 3 CSV content
   const stage3Csv = React.useMemo(() => {
     let rows = [
       '# Stage 3 Quantum Simulation Results',
@@ -106,18 +103,18 @@ export const SubmissionHub: React.FC<SubmissionHubProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="rounded-2xl glass-panel-glow p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+      {/* Header Banner */}
+      <div className="rounded-2xl acrylic-card-elevated p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="max-w-xl space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-500/30 text-xs font-mono text-cyan-300">
-            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 border border-orange-200 text-xs font-mono font-bold text-orange-800">
+            <Sparkles className="w-3.5 h-3.5 text-orange-600" />
             Hackathon Verification & Submission Suite
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             Submission Deliverables & Technical Report
           </h1>
-          <p className="text-sm text-slate-300 leading-relaxed">
-            Exports 100% compliant result files (`stage1_result.csv`, `stage2_result.csv`, `stage3_result.csv`) per Section 8 guidelines, alongside complete mathematical formulations and business recommendations for the judges.
+          <p className="text-sm text-slate-600 leading-relaxed">
+            Exports 100% compliant result files (stage1_result.csv, stage2_result.csv, stage3_result.csv) per Section 8 guidelines, alongside complete mathematical formulations and business recommendations for the judges.
           </p>
         </div>
 
@@ -128,7 +125,7 @@ export const SubmissionHub: React.FC<SubmissionHubProps> = ({
               setTimeout(() => downloadFile('stage2_result.csv', stage2Csv), 200);
               setTimeout(() => downloadFile('stage3_result.csv', stage3Csv), 400);
             }}
-            className="px-6 py-3 rounded-xl font-bold text-xs tracking-wider uppercase font-mono bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 shadow-lg shadow-cyan-500/20 transition-all flex items-center justify-center gap-2"
+            className="px-6 py-3 rounded-xl font-bold text-xs tracking-wider uppercase font-mono bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white shadow-md shadow-orange-500/20 transition-all flex items-center justify-center gap-2"
           >
             <Download className="w-4 h-4" />
             <span>Download All 3 Result Files</span>
@@ -138,136 +135,133 @@ export const SubmissionHub: React.FC<SubmissionHubProps> = ({
 
       {/* Submission Deliverables Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Stage 1 File */}
-        <div className="glass-panel rounded-2xl p-6 flex flex-col justify-between space-y-4">
+        <div className="acrylic-card rounded-2xl p-6 flex flex-col justify-between space-y-4">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="font-mono text-xs text-cyan-400 font-bold">STAGE 1 RESULT</span>
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-cyan-950 text-cyan-300 border border-cyan-800">
+              <span className="font-mono text-xs text-orange-700 font-bold">STAGE 1 RESULT</span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-orange-100 text-orange-800 font-bold border border-orange-200">
                 100 Rows
               </span>
             </div>
-            <h3 className="text-base font-bold text-white">stage1_result.csv</h3>
-            <p className="text-xs text-slate-400 mt-1">
+            <h3 className="text-base font-bold text-slate-900">stage1_result.csv</h3>
+            <p className="text-xs text-slate-500 mt-1">
               Test customer IDs with continuous probabilities, rank 1-100, and top-10 flag.
             </p>
-            <div className="mt-3 bg-slate-950 p-2.5 rounded-lg border border-slate-800 font-mono text-[10px] text-slate-300 overflow-x-auto max-h-24">
+            <div className="mt-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200 font-mono text-[10px] text-slate-700 overflow-x-auto max-h-24">
               customer_id,predicted_probability,rank,is_top_10<br />
               {stage1Csv.split('\n').slice(1, 4).join('\n')}
             </div>
           </div>
 
-          <div className="flex gap-2 pt-2 border-t border-slate-800">
+          <div className="flex gap-2 pt-2 border-t border-slate-100">
             <button
               onClick={() => downloadFile('stage1_result.csv', stage1Csv)}
-              className="flex-1 py-2 px-3 rounded-lg text-xs font-mono font-semibold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500/30 flex items-center justify-center gap-1.5"
+              className="flex-1 py-2 px-3 rounded-xl text-xs font-mono font-bold bg-orange-50 text-orange-700 border border-orange-200 hover:bg-orange-100 flex items-center justify-center gap-1.5"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Download</span>
             </button>
             <button
               onClick={() => copyToClipboard('stage1', stage1Csv)}
-              className="p-2 rounded-lg text-slate-400 hover:text-slate-200 bg-slate-900 border border-slate-800"
+              className="p-2 rounded-xl text-slate-600 hover:text-slate-900 bg-slate-50 border border-slate-200"
               title="Copy"
             >
-              {copiedFile === 'stage1' ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+              {copiedFile === 'stage1' ? <CheckCircle2 className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
             </button>
           </div>
         </div>
 
-        {/* Stage 2 File */}
-        <div className="glass-panel rounded-2xl p-6 flex flex-col justify-between space-y-4">
+        <div className="acrylic-card rounded-2xl p-6 flex flex-col justify-between space-y-4">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="font-mono text-xs text-indigo-400 font-bold">STAGE 2 RESULT</span>
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-indigo-950 text-indigo-300 border border-indigo-800">
+              <span className="font-mono text-xs text-amber-700 font-bold">STAGE 2 RESULT</span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-amber-100 text-amber-800 font-bold border border-amber-200">
                 QUBO & Exact Soln
               </span>
             </div>
-            <h3 className="text-base font-bold text-white">stage2_result.csv</h3>
-            <p className="text-xs text-slate-400 mt-1">
+            <h3 className="text-base font-bold text-slate-900">stage2_result.csv</h3>
+            <p className="text-xs text-slate-500 mt-1">
               Top 10 candidates, exact 6 selected IDs, budget & capacity usage, and zero gap.
             </p>
-            <div className="mt-3 bg-slate-950 p-2.5 rounded-lg border border-slate-800 font-mono text-[10px] text-slate-300 overflow-x-auto max-h-24">
+            <div className="mt-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200 font-mono text-[10px] text-slate-700 overflow-x-auto max-h-24">
               # Selection Summary<br />
               selected_customer_ids: {selectedCustomers.map((c) => c.customer_id).join(',')}<br />
               objective_net_value: ${selectedCustomers.reduce((a, b) => a + b.expected_net_value, 0)}
             </div>
           </div>
 
-          <div className="flex gap-2 pt-2 border-t border-slate-800">
+          <div className="flex gap-2 pt-2 border-t border-slate-100">
             <button
               onClick={() => downloadFile('stage2_result.csv', stage2Csv)}
-              className="flex-1 py-2 px-3 rounded-lg text-xs font-mono font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 hover:bg-indigo-500/30 flex items-center justify-center gap-1.5"
+              className="flex-1 py-2 px-3 rounded-xl text-xs font-mono font-bold bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 flex items-center justify-center gap-1.5"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Download</span>
             </button>
             <button
               onClick={() => copyToClipboard('stage2', stage2Csv)}
-              className="p-2 rounded-lg text-slate-400 hover:text-slate-200 bg-slate-900 border border-slate-800"
+              className="p-2 rounded-xl text-slate-600 hover:text-slate-900 bg-slate-50 border border-slate-200"
               title="Copy"
             >
-              {copiedFile === 'stage2' ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+              {copiedFile === 'stage2' ? <CheckCircle2 className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
             </button>
           </div>
         </div>
 
-        {/* Stage 3 File */}
-        <div className="glass-panel rounded-2xl p-6 flex flex-col justify-between space-y-4">
+        <div className="acrylic-card rounded-2xl p-6 flex flex-col justify-between space-y-4">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="font-mono text-xs text-emerald-400 font-bold">STAGE 3 RESULT</span>
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-800">
+              <span className="font-mono text-xs text-emerald-700 font-bold">STAGE 3 RESULT</span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-100 text-emerald-800 font-bold border border-emerald-200">
                 6 Qubits
               </span>
             </div>
-            <h3 className="text-base font-bold text-white">stage3_result.csv</h3>
-            <p className="text-xs text-slate-400 mt-1">
-              Customer-to-qubit mapping, Ry angles ($\theta_i$), quantum vs exact probabilities.
+            <h3 className="text-base font-bold text-slate-900">stage3_result.csv</h3>
+            <p className="text-xs text-slate-500 mt-1">
+              Customer-to-qubit mapping, Ry angles (θ_i), quantum vs exact probabilities.
             </p>
-            <div className="mt-3 bg-slate-950 p-2.5 rounded-lg border border-slate-800 font-mono text-[10px] text-slate-300 overflow-x-auto max-h-24">
+            <div className="mt-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200 font-mono text-[10px] text-slate-700 overflow-x-auto max-h-24">
               quantum_estimate: {simResult.quantum_prob_ge3}<br />
               exact_poisson_binomial: {simResult.exact_prob_ge3}<br />
               shots: {simResult.shots}
             </div>
           </div>
 
-          <div className="flex gap-2 pt-2 border-t border-slate-800">
+          <div className="flex gap-2 pt-2 border-t border-slate-100">
             <button
               onClick={() => downloadFile('stage3_result.csv', stage3Csv)}
-              className="flex-1 py-2 px-3 rounded-lg text-xs font-mono font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 flex items-center justify-center gap-1.5"
+              className="flex-1 py-2 px-3 rounded-xl text-xs font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 flex items-center justify-center gap-1.5"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Download</span>
             </button>
             <button
               onClick={() => copyToClipboard('stage3', stage3Csv)}
-              className="p-2 rounded-lg text-slate-400 hover:text-slate-200 bg-slate-900 border border-slate-800"
+              className="p-2 rounded-xl text-slate-600 hover:text-slate-900 bg-slate-50 border border-slate-200"
               title="Copy"
             >
-              {copiedFile === 'stage3' ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+              {copiedFile === 'stage3' ? <CheckCircle2 className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
             </button>
           </div>
         </div>
       </div>
 
       {/* Built-in Technical Report for Hackathon Judges */}
-      <div className="glass-panel rounded-2xl p-6 sm:p-8 space-y-6">
-        <div className="border-b border-slate-800 pb-4">
-          <div className="flex items-center gap-2 text-cyan-400 text-xs font-mono">
+      <div className="acrylic-card rounded-2xl p-6 sm:p-8 space-y-6">
+        <div className="border-b border-slate-100 pb-4">
+          <div className="flex items-center gap-2 text-orange-600 text-xs font-mono font-bold">
             <FileText className="w-4 h-4" />
             <span>EXECUTIVE TECHNICAL REPORT & METHODOLOGY</span>
           </div>
-          <h2 className="text-xl font-bold text-white mt-1">
+          <h2 className="text-xl font-bold text-slate-900 mt-1">
             Hybrid Quantum-Classical Campaign Optimization: Architecture & Findings
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-slate-300 leading-relaxed font-sans">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-slate-600 leading-relaxed font-sans">
           <div className="space-y-4">
             <div>
-              <h4 className="font-bold text-cyan-300 font-mono mb-1">
+              <h4 className="font-bold text-orange-800 font-mono mb-1">
                 1. Stage 1: Quantum Machine Learning (VQC vs Baseline)
               </h4>
               <p>
@@ -276,12 +270,12 @@ export const SubmissionHub: React.FC<SubmissionHubProps> = ({
             </div>
 
             <div>
-              <h4 className="font-bold text-indigo-300 font-mono mb-1">
+              <h4 className="font-bold text-amber-800 font-mono mb-1">
                 2. Stage 2: Constrained Customer Selection (QUBO & QAOA)
               </h4>
               <p>
                 Selecting 6 candidates from 10 is formulated as a QUBO Hamiltonian:
-                <code className="block my-1 bg-slate-950 p-2 rounded text-cyan-300 font-mono text-[11px]">
+                <code className="block my-1 bg-slate-100 p-2 rounded text-slate-800 font-mono text-[11px] border border-slate-200">
                   H(x) = - ∑ v_i x_i + λ_1 (∑ x_i - 6)² + λ_2 [Cost - B]₊² + λ_3 [Cap - C]₊²
                 </code>
                 Evaluating all 210 combinations verified that the 2-layer QAOA convergence reaches the true global ground state with an expected net value of <strong>${selectedCustomers.reduce((a, b) => a + b.expected_net_value, 0).toLocaleString()}</strong> with 0 constraint violations (ΔE = $0.00).
@@ -291,7 +285,7 @@ export const SubmissionHub: React.FC<SubmissionHubProps> = ({
 
           <div className="space-y-4">
             <div>
-              <h4 className="font-bold text-emerald-300 font-mono mb-1">
+              <h4 className="font-bold text-emerald-800 font-mono mb-1">
                 3. Stage 3: Multi-Qubit Circuit & Error Analysis
               </h4>
               <p>
@@ -300,12 +294,12 @@ export const SubmissionHub: React.FC<SubmissionHubProps> = ({
               </p>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-              <h4 className="font-bold text-amber-300 font-mono mb-1">
+            <div className="p-4 rounded-xl bg-orange-50/70 border border-orange-200">
+              <h4 className="font-bold text-orange-900 font-mono mb-1">
                 4. Bank Business Recommendation
               </h4>
               <p>
-                Targeting only the 6 selected customers yields an expected deposit volume of over $24,000$ at a minimal contact expenditure of ${selectedCustomers.reduce((a, b) => a + b.contact_cost, 0)}, achieving a <strong>{(simResult.exact_prob_ge3 * 100).toFixed(1)}% confidence</strong> of meeting or exceeding the quarterly quota of 3 converted deposits while respecting operational frontline staff limits.
+                Targeting only the 6 selected customers yields an expected deposit volume of over $24,000 at a minimal contact expenditure of ${selectedCustomers.reduce((a, b) => a + b.contact_cost, 0)}, achieving a <strong>{(simResult.exact_prob_ge3 * 100).toFixed(1)}% confidence</strong> of meeting or exceeding the quarterly quota of 3 converted deposits while respecting operational frontline staff limits.
               </p>
             </div>
           </div>
