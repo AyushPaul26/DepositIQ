@@ -199,3 +199,4 @@ export function computePredictions(activeModel: 'vqc' | 'qsvc' | 'baseline' = 'v
     is_top10: idx < 10
   }));
 }
+

@@ -426,3 +426,4 @@ export const Stage1Predict: React.FC<Stage1PredictProps> = ({
     </div>
   );
 };
+

@@ -362,3 +362,4 @@ export function calculateRyAngle(prob: number): { radians: number; degrees: numb
     degrees: Number(((rad * 180) / Math.PI).toFixed(2))
   };
 }
+

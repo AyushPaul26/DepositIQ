@@ -100,3 +100,4 @@ export const IsingLandscape3D: React.FC<IsingLandscapeProps> = ({
     </div>
   );
 };
+

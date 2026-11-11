@@ -90,3 +90,4 @@ export interface SimulationResult {
   cnot_count: number;
   single_qubit_count: number;
 }
+
