@@ -9,11 +9,18 @@ import { CandidateCustomer, SimulationResult } from './types';
 import { solveExactClassical, simulateQuantumCircuit } from './utils/quantumMath';
 
 export function App() {
-  const [currentStage, setCurrentStage] = useState<number>(1);
+  const [currentStage, setCurrentStage] = useState<number>(() => {
+    const params = new URLSearchParams(window.location.search);
+    const s = parseInt(params.get('stage') || '1', 10);
+    return isNaN(s) ? 1 : Math.min(4, Math.max(1, s));
+  });
   const [activeModel, setActiveModel] = useState<'vqc' | 'qsvc' | 'baseline'>('vqc');
 
-  // Dark mode state with persistence
+  // Dark mode state with persistence & query parameter support
   const [isDark, setIsDark] = useState<boolean>(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('theme') === 'dark') return true;
+    if (params.get('theme') === 'light') return false;
     const saved = localStorage.getItem('depositiq-theme');
     if (saved) return saved === 'dark';
     return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
