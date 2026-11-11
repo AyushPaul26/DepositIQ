@@ -4,7 +4,7 @@ import { Stage1Predict } from './components/stage1/Stage1Predict';
 import { Stage2Select } from './components/stage2/Stage2Select';
 import { Stage3Simulate } from './components/stage3/Stage3Simulate';
 import { SubmissionHub } from './components/submission/SubmissionHub';
-import { computePredictions, STAGE2_CONSTRAINTS } from './data/dataset';
+import { computePredictions, STAGE2_CONSTRAINTS, STAGE2_TOP10_CANDIDATES } from './data/dataset';
 import { CandidateCustomer, SimulationResult } from './types';
 import { solveExactClassical, simulateQuantumCircuit } from './utils/quantumMath';
 
@@ -14,7 +14,7 @@ export function App() {
     const s = parseInt(params.get('stage') || '1', 10);
     return isNaN(s) ? 1 : Math.min(4, Math.max(1, s));
   });
-  const [activeModel, setActiveModel] = useState<'vqc' | 'qsvc' | 'baseline'>('vqc');
+  const [activeModel, setActiveModel] = useState<'hybrid' | 'vqc' | 'qfk' | 'classical'>('hybrid');
 
   // Dark mode state with persistence & query parameter support
   const [isDark, setIsDark] = useState<boolean>(() => {
@@ -45,22 +45,10 @@ export function App() {
     return computePredictions(activeModel);
   }, [activeModel]);
 
-  // Stage 2 Candidate Pool: Top 10 from Stage 1
+  // Stage 2 Candidate Pool: Top 10 from Stage 1 (Ground truth aligned with stage2-select.ipynb)
   const stage2Candidates: CandidateCustomer[] = useMemo(() => {
-    return predictions.slice(0, 10).map((p) => {
-      const netVal = Math.round(p.active_prob * p.deposit_value - p.contact_cost);
-      return {
-        customer_id: p.customer_id,
-        probability: p.active_prob,
-        expected_deposit_value: p.deposit_value,
-        contact_cost: p.contact_cost,
-        capacity_requirement: p.capacity_req,
-        expected_net_value: netVal,
-        selected_by_quantum: false,
-        selected_by_classical: false,
-      };
-    });
-  }, [predictions]);
+    return STAGE2_TOP10_CANDIDATES;
+  }, []);
 
   // Solve exact classical baseline initially for default 6 selected customers
   const defaultSelection = useMemo(() => {
@@ -72,7 +60,9 @@ export function App() {
   const [selectedCustomers, setSelectedCustomers] = useState<CandidateCustomer[]>(defaultSelection);
 
   useEffect(() => {
-    setSelectedCustomers(defaultSelection);
+    if (defaultSelection.length === 6) {
+      setSelectedCustomers(defaultSelection);
+    }
   }, [defaultSelection]);
 
   // Stage 3 Simulation result state
@@ -131,17 +121,17 @@ export function App() {
       </div>
 
       {/* Architectural Studio Footer */}
-      <footer className="border-t border-slate-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 py-6 mt-12 text-xs font-mono text-slate-500 dark:text-zinc-400 backdrop-blur-md transition-colors duration-300">
+      <footer className="border-t border-slate-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 py-5 mt-12 text-xs font-mono text-slate-500 dark:text-zinc-400 backdrop-blur-md transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-orange-500" />
             <span className="text-slate-800 dark:text-zinc-100 font-bold">DepositIQ</span>
-            <span>— The ATOMIQ Hackathon Technical Challenge</span>
+            <span>— Hybrid Quantum-Classical Term Deposit Campaign Pipeline</span>
           </div>
           <div className="flex items-center gap-4 text-slate-600 dark:text-zinc-400">
-            <span>Branch: <strong className="text-orange-700 dark:text-orange-400">ayush</strong></span>
-            <span>Repository: <strong className="text-slate-900 dark:text-zinc-200">Mayank2177/DepositIQ</strong></span>
-            <span>Three.js / React 18 / WebGL</span>
+            <span>Branch: <strong className="text-orange-600 dark:text-orange-400">ayush</strong></span>
+            <span>Modular Backend: <strong className="text-emerald-600 dark:text-emerald-400">FastAPI Ready</strong></span>
+            <span>Three.js / WebGL</span>
           </div>
         </div>
       </footer>

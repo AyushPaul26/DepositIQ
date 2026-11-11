@@ -6,8 +6,8 @@ import { CandidateCustomer } from '../../types';
 
 interface QuantumWorkbench3DProps {
   candidates: CandidateCustomer[];
-  selectedIds: Set<number>;
-  onToggleCustomer: (id: number) => void;
+  selectedIds: Set<string | number>;
+  onToggleCustomer: (id: string | number) => void;
   className?: string;
 }
 

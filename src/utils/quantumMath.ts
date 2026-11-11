@@ -67,7 +67,7 @@ export function solveExactClassical(
   return {
     bestSelection,
     bestBitstring,
-    bestNetValue: Math.round(bestNetValue),
+    bestNetValue: Number(bestNetValue.toFixed(6)),
     totalCost,
     totalCapacity,
     isFeasible: bestIndices.length === k,
@@ -201,7 +201,7 @@ export function simulateQAOA(
         bitstring,
         count,
         probability: Number((count / shots).toFixed(4)),
-        netValue: Math.round(net),
+        netValue: Number(net.toFixed(6)),
         feasible
       };
     })

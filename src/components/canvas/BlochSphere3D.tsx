@@ -7,7 +7,7 @@ interface BlochSphereProps {
   theta: number; // in radians
   probability: number;
   qubitLabel?: string;
-  customerId?: number;
+  customerId?: string | number;
   className?: string;
 }
 

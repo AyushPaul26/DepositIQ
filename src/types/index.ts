@@ -1,5 +1,5 @@
 export interface CustomerFeature {
-  customer_id: number;
+  customer_id: string | number;
   age: number;
   job: string;
   marital: string;
@@ -20,9 +20,10 @@ export interface CustomerFeature {
 }
 
 export interface PredictionResult {
-  customer_id: number;
+  customer_id: string | number;
+  prob_hybrid: number;
   prob_vqc: number;
-  prob_qsvc: number;
+  prob_qfk: number;
   prob_baseline: number;
   active_prob: number;
   rank: number;
@@ -34,19 +35,24 @@ export interface PredictionResult {
 
 export interface ModelMetrics {
   name: string;
-  type: 'quantum' | 'classical';
+  shortName: string;
+  type: 'hybrid' | 'quantum' | 'classical';
   roc_auc: number;
   pr_auc: number;
-  precision_at_10: number;
-  recall_at_10: number;
+  precision_at_k: number;
+  recall_at_k: number;
   brier_score: number;
   log_loss: number;
+  ece: number;
+  cal_slope: number;
   train_time_sec: number;
   parameters: number;
+  description: string;
+  circuitDetails?: string;
 }
 
 export interface CandidateCustomer {
-  customer_id: number;
+  customer_id: string | number;
   probability: number;
   expected_deposit_value: number;
   contact_cost: number;
@@ -54,14 +60,27 @@ export interface CandidateCustomer {
   expected_net_value: number;
   selected_by_quantum: boolean;
   selected_by_classical: boolean;
+  bit_index?: number;
   qubit_index?: number;
 }
 
 export interface Stage2Constraints {
   candidate_pool_size: number; // 10
   exact_select_count: number;  // 6
-  budget_limit: number;        // e.g. 500
-  capacity_limit: number;      // e.g. 120
+  budget_limit: number;        // 25
+  capacity_limit: number;      // 22
+}
+
+export interface SolverBenchmark {
+  name: string;
+  category: 'classical_exact' | 'quantum_variational' | 'quantum_search' | 'quantum_inspired' | 'annealing' | 'nisq_realism';
+  bitstring: string;
+  valid: boolean;
+  net_value: number;
+  execution_seconds: number;
+  gap_to_exact_pct: number;
+  matches_exact: boolean;
+  description: string;
 }
 
 export interface QaoaParameters {
@@ -90,4 +109,3 @@ export interface SimulationResult {
   cnot_count: number;
   single_qubit_count: number;
 }
-

@@ -1,12 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { PredictionResult } from '../../types';
 import { MODEL_METRICS } from '../../data/dataset';
-import { Search, Filter, Sparkles, CheckCircle2, ChevronRight, Activity, Cpu } from 'lucide-react';
+import { Search, Filter, Sparkles, CheckCircle2, ChevronRight, Activity, Cpu, Layers, GitBranch, ArrowUpRight } from 'lucide-react';
 
 interface Stage1PredictProps {
   predictions: PredictionResult[];
-  activeModel: 'vqc' | 'qsvc' | 'baseline';
-  setActiveModel: (m: 'vqc' | 'qsvc' | 'baseline') => void;
+  activeModel: 'hybrid' | 'vqc' | 'qfk' | 'classical';
+  setActiveModel: (m: 'hybrid' | 'vqc' | 'qfk' | 'classical') => void;
   onProceedToStage2: () => void;
 }
 
@@ -18,13 +18,13 @@ export const Stage1Predict: React.FC<Stage1PredictProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [onlyTop10, setOnlyTop10] = useState(false);
-  const [activeMetricTab, setActiveMetricTab] = useState<'roc' | 'calibration'>('roc');
+  const [activeArchTab, setActiveArchTab] = useState<'overview' | 'qfk' | 'vqc' | 'ensemble'>('overview');
 
   const currentMetrics = MODEL_METRICS[activeModel];
 
   const filteredCustomers = useMemo(() => {
     return predictions.filter((item) => {
-      const matchSearch = item.customer_id.toString().includes(searchTerm);
+      const matchSearch = String(item.customer_id).toLowerCase().includes(searchTerm.toLowerCase());
       const matchTop = onlyTop10 ? item.is_top10 : true;
       return matchSearch && matchTop;
     });
@@ -36,35 +36,46 @@ export const Stage1Predict: React.FC<Stage1PredictProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Hero Banner in Luminous Light Studio Aesthetic */}
+      {/* Hero Banner with Porcelain Light & Titanium Dark Styling */}
       <div className="rounded-2xl acrylic-card-elevated p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="max-w-xl space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 border border-orange-200 text-xs font-mono font-bold text-orange-800">
-            <Sparkles className="w-3.5 h-3.5 text-orange-600" />
-            Stage 1: Subscription Prediction
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 dark:bg-orange-950/80 border border-orange-200 dark:border-orange-800 text-xs font-mono font-bold text-orange-800 dark:text-orange-400">
+            <Sparkles className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" />
+            Stage 1: Term Deposit Prediction
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Quantum-Enhanced Customer Classification
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-zinc-100 tracking-tight">
+            Hybrid Quantum-Classical Classification
           </h1>
-          <p className="text-sm text-slate-600 leading-relaxed">
-            Trained on 300 labeled banking campaign records using 10-fold stratified cross validation. Evaluating continuous probabilities on 100 blind test customers. The top 10 ranked candidates advance directly to constrained selection.
+          <p className="text-sm text-slate-600 dark:text-zinc-400 leading-relaxed">
+            Evaluates 6-qubit quantum feature maps, variational circuits, and classical baselines across 10-fold cross validation. Continuous probability predictions on 100 blind test customers are ranked to extract the Top 10 candidate pool.
           </p>
-          <div className="pt-2 flex flex-wrap gap-2.5">
-            {(['vqc', 'qsvc', 'baseline'] as const).map((mKey) => {
+          <div className="pt-2 flex flex-wrap gap-2">
+            {(['hybrid', 'vqc', 'qfk', 'classical'] as const).map((mKey) => {
               const m = MODEL_METRICS[mKey];
               const isSelected = activeModel === mKey;
               return (
                 <button
                   key={mKey}
                   onClick={() => setActiveModel(mKey)}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-mono transition-all border flex items-center gap-2 ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-mono transition-all border flex items-center gap-2 ${
                     isSelected
                       ? 'bg-orange-600 text-white border-orange-700 font-bold shadow-md shadow-orange-500/20'
-                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                      : 'bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-800'
                   }`}
                 >
-                  {m.type === 'quantum' ? <Cpu className="w-3.5 h-3.5" /> : <Activity className="w-3.5 h-3.5" />}
-                  <span>{m.name.split(' (')[0]}</span>
+                  {m.type === 'quantum' ? (
+                    <Cpu className="w-3.5 h-3.5" />
+                  ) : m.type === 'hybrid' ? (
+                    <Sparkles className="w-3.5 h-3.5" />
+                  ) : (
+                    <Activity className="w-3.5 h-3.5" />
+                  )}
+                  <span>{m.shortName}</span>
+                  {mKey === 'hybrid' && (
+                    <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-amber-400/30 text-amber-900 dark:text-amber-200 font-bold uppercase">
+                      Best
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -72,279 +83,231 @@ export const Stage1Predict: React.FC<Stage1PredictProps> = ({
         </div>
 
         {/* Studio KPI Visualizer Card */}
-        <div className="w-full md:w-80 acrylic-card rounded-2xl p-5 border border-slate-200 shadow-sm space-y-3">
-          <div className="flex justify-between items-center text-xs font-mono text-slate-500">
-            <span>Stage 1 Status</span>
-            <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold border border-emerald-200 text-[10px]">
-              Trained & Calibrated
+        <div className="w-full md:w-80 acrylic-card rounded-2xl p-5 border border-slate-200 dark:border-zinc-800 shadow-sm space-y-3">
+          <div className="flex justify-between items-center text-xs font-mono text-slate-500 dark:text-zinc-400">
+            <span>Active Model</span>
+            <span className="px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 font-bold border border-emerald-200 dark:border-emerald-800 text-[10px]">
+              OOF Calibrated
             </span>
           </div>
-          <div className="text-3xl font-black text-slate-900 font-mono">
-            {(currentMetrics.roc_auc).toFixed(3)}
+          <div className="text-3xl font-black text-slate-900 dark:text-zinc-100 font-mono">
+            {currentMetrics.roc_auc.toFixed(4)}
           </div>
-          <div className="text-xs text-slate-500 font-mono">
-            Model ROC-AUC Score ({currentMetrics.name.split(' (')[0]})
+          <div className="text-xs text-slate-500 dark:text-zinc-400 font-mono">
+            ROC-AUC ({currentMetrics.shortName})
           </div>
-          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-xs font-mono">
+          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 dark:border-zinc-800 text-xs font-mono">
             <div>
-              <div className="text-slate-400 text-[10px]">Precision@10</div>
-              <div className="text-slate-800 font-bold text-sm">{(currentMetrics.precision_at_10 * 100).toFixed(0)}%</div>
+              <div className="text-slate-400 dark:text-zinc-500 text-[10px]">PR-AUC Score</div>
+              <div className="text-slate-800 dark:text-zinc-200 font-bold text-sm">{currentMetrics.pr_auc.toFixed(4)}</div>
             </div>
             <div>
-              <div className="text-slate-400 text-[10px]">Brier Score</div>
-              <div className="text-orange-600 font-bold text-sm">{currentMetrics.brier_score.toFixed(3)}</div>
+              <div className="text-slate-400 dark:text-zinc-500 text-[10px]">Brier Score</div>
+              <div className="text-orange-600 dark:text-orange-400 font-bold text-sm">{currentMetrics.brier_score.toFixed(4)}</div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Benchmark Metric Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        <div className="acrylic-card rounded-xl p-4">
-          <div className="text-[11px] font-mono text-slate-500">ROC-AUC</div>
-          <div className="text-2xl font-black text-orange-600 font-mono mt-1">
-            {currentMetrics.roc_auc.toFixed(3)}
-          </div>
-          <div className="text-[10px] text-emerald-700 font-mono mt-0.5 font-medium">
-            +{(currentMetrics.roc_auc - MODEL_METRICS.baseline.roc_auc).toFixed(3)} vs baseline
-          </div>
-        </div>
-
-        <div className="acrylic-card rounded-xl p-4">
-          <div className="text-[11px] font-mono text-slate-500">PR-AUC</div>
-          <div className="text-2xl font-black text-amber-600 font-mono mt-1">
-            {currentMetrics.pr_auc.toFixed(3)}
-          </div>
-          <div className="text-[10px] text-emerald-700 font-mono mt-0.5 font-medium">
-            High Imbalance Capture
-          </div>
-        </div>
-
-        <div className="acrylic-card rounded-xl p-4">
-          <div className="text-[11px] font-mono text-slate-500">Precision@10</div>
-          <div className="text-2xl font-black text-emerald-600 font-mono mt-1">
-            {(currentMetrics.precision_at_10 * 100).toFixed(0)}%
-          </div>
-          <div className="text-[10px] text-slate-500 font-mono mt-0.5">
-            Stage 2 Candidate Pool
-          </div>
-        </div>
-
-        <div className="acrylic-card rounded-xl p-4">
-          <div className="text-[11px] font-mono text-slate-500">Recall@10</div>
-          <div className="text-2xl font-black text-red-600 font-mono mt-1">
-            {(currentMetrics.recall_at_10 * 100).toFixed(0)}%
-          </div>
-          <div className="text-[10px] text-slate-500 font-mono mt-0.5">
-            True positive capture
-          </div>
-        </div>
-
-        <div className="acrylic-card rounded-xl p-4">
-          <div className="text-[11px] font-mono text-slate-500">Brier Score</div>
-          <div className="text-2xl font-black text-yellow-600 font-mono mt-1">
-            {currentMetrics.brier_score.toFixed(3)}
-          </div>
-          <div className="text-[10px] text-emerald-700 font-mono mt-0.5 font-medium">
-            Well Calibrated (&lt;0.08)
-          </div>
-        </div>
-
-        <div className="acrylic-card rounded-xl p-4">
-          <div className="text-[11px] font-mono text-slate-500">Log-Loss</div>
-          <div className="text-2xl font-black text-slate-700 font-mono mt-1">
-            {currentMetrics.log_loss.toFixed(3)}
-          </div>
-          <div className="text-[10px] text-slate-500 font-mono mt-0.5">
-            Continuous Prob Error
-          </div>
-        </div>
-      </div>
-
-      {/* Interactive Charts: ROC Curve vs Reliability Curve */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 acrylic-card rounded-2xl p-6">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-            <div>
-              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <Activity className="w-4 h-4 text-orange-600" />
-                Model Validation Curves: Quantum vs Classical Baseline
-              </h3>
-              <p className="text-xs text-slate-500">
-                10-fold stratified cross-validation on 300 banking training records
-              </p>
-            </div>
-            <div className="flex bg-slate-100 rounded-lg p-1 text-xs font-mono border border-slate-200">
-              <button
-                onClick={() => setActiveMetricTab('roc')}
-                className={`px-3 py-1 rounded-md transition-colors ${
-                  activeMetricTab === 'roc'
-                    ? 'bg-white text-orange-700 font-bold shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                ROC & PR Curve
-              </button>
-              <button
-                onClick={() => setActiveMetricTab('calibration')}
-                className={`px-3 py-1 rounded-md transition-colors ${
-                  activeMetricTab === 'calibration'
-                    ? 'bg-white text-orange-700 font-bold shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                Calibration Curve
-              </button>
-            </div>
-          </div>
-
-          {/* SVG Chart in Light Studio Palette */}
-          <div className="h-64 mt-4 w-full relative flex items-center justify-center">
-            {activeMetricTab === 'roc' ? (
-              <svg viewBox="0 0 400 220" className="w-full h-full text-slate-500 overflow-visible">
-                {/* Grid lines */}
-                <line x1="50" y1="20" x2="380" y2="20" stroke="#f1f5f9" strokeDasharray="3 3" />
-                <line x1="50" y1="65" x2="380" y2="65" stroke="#f1f5f9" strokeDasharray="3 3" />
-                <line x1="50" y1="110" x2="380" y2="110" stroke="#f1f5f9" strokeDasharray="3 3" />
-                <line x1="50" y1="155" x2="380" y2="155" stroke="#f1f5f9" strokeDasharray="3 3" />
-                <line x1="50" y1="200" x2="380" y2="200" stroke="#cbd5e1" />
-                <line x1="50" y1="20" x2="50" y2="200" stroke="#cbd5e1" />
-
-                {/* Diagonal */}
-                <line x1="50" y1="200" x2="380" y2="20" stroke="#cbd5e1" strokeDasharray="4 4" />
-
-                {/* Classical Baseline Curve (XGBoost) */}
-                <path
-                  d="M 50 200 Q 90 90, 160 55 T 270 30 T 380 20"
-                  fill="none"
-                  stroke="#94a3b8"
-                  strokeWidth="2.5"
-                  strokeDasharray="4 4"
-                />
-
-                {/* Quantum VQC Curve in Vibrant Orange */}
-                <path
-                  d="M 50 200 Q 75 60, 130 35 T 230 24 T 380 20"
-                  fill="none"
-                  stroke="#ea580c"
-                  strokeWidth="3.5"
-                />
-
-                {/* Top 10 operating threshold marker */}
-                <circle cx="110" cy="40" r="5" fill="#f59e0b" />
-                <text x="120" y="44" fill="#c2410c" fontSize="10" fontFamily="monospace" fontWeight="bold">
-                  Operating Point (Cutoff Top 10, p ≥ 0.72)
-                </text>
-
-                {/* Axes labels */}
-                <text x="50" y="215" fill="#64748b" fontSize="10" fontFamily="monospace">0.0 (FPR)</text>
-                <text x="215" y="215" fill="#64748b" fontSize="10" fontFamily="monospace">0.5</text>
-                <text x="365" y="215" fill="#64748b" fontSize="10" fontFamily="monospace">1.0</text>
-                <text x="15" y="200" fill="#64748b" fontSize="10" fontFamily="monospace">0.0</text>
-                <text x="15" y="110" fill="#64748b" fontSize="10" fontFamily="monospace">0.5 (TPR)</text>
-                <text x="15" y="25" fill="#64748b" fontSize="10" fontFamily="monospace">1.0</text>
-              </svg>
-            ) : (
-              <svg viewBox="0 0 400 220" className="w-full h-full text-slate-500 overflow-visible">
-                <line x1="50" y1="200" x2="380" y2="20" stroke="#cbd5e1" strokeDasharray="4 4" />
-                <line x1="50" y1="200" x2="380" y2="200" stroke="#cbd5e1" />
-                <line x1="50" y1="20" x2="50" y2="200" stroke="#cbd5e1" />
-
-                <polyline
-                  points="50,200 85,182 130,158 185,124 245,88 310,54 380,24"
-                  fill="none"
-                  stroke="#ea580c"
-                  strokeWidth="3"
-                />
-                <circle cx="85" cy="182" r="4" fill="#ea580c" />
-                <circle cx="130" cy="158" r="4" fill="#ea580c" />
-                <circle cx="185" cy="124" r="4" fill="#ea580c" />
-                <circle cx="245" cy="88" r="4" fill="#ea580c" />
-                <circle cx="310" cy="54" r="4" fill="#ea580c" />
-                <circle cx="380" cy="24" r="4" fill="#ea580c" />
-
-                <text x="50" y="215" fill="#64748b" fontSize="10" fontFamily="monospace">Mean Predicted Probability</text>
-                <text x="15" y="110" fill="#64748b" fontSize="10" fontFamily="monospace" transform="rotate(-90 15 110)">
-                  Fraction Positives
-                </text>
-              </svg>
-            )}
-          </div>
-
-          <div className="flex items-center justify-between text-xs font-mono text-slate-500 pt-3 border-t border-slate-100">
-            <div className="flex items-center gap-4">
-              <span className="flex items-center gap-1.5 text-orange-700 font-bold">
-                <span className="w-2.5 h-2.5 rounded-full bg-orange-600 inline-block" />
-                {currentMetrics.name}
-              </span>
-              <span className="flex items-center gap-1.5 text-slate-500">
-                <span className="w-2.5 h-0.5 bg-slate-400 inline-block" />
-                Baseline XGBoost
-              </span>
-            </div>
-            <span className="text-emerald-700 font-bold">PR-AUC: {currentMetrics.pr_auc.toFixed(3)}</span>
-          </div>
-        </div>
-
-        {/* Top 10 Summary Roster */}
-        <div className="acrylic-card rounded-2xl p-6 flex flex-col justify-between">
+      {/* Model Benchmark Comparison Table from stage1-predict.ipynb Cell 20 */}
+      <div className="acrylic-card rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-zinc-800 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-zinc-800 pb-3">
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-amber-500" />
-                Stage 1 Top 10 Roster
-              </h3>
-              <span className="px-2 py-0.5 text-xs font-mono font-bold rounded bg-amber-100 text-amber-800 border border-amber-200">
-                Strict Tie-Break
-              </span>
-            </div>
-            <p className="text-xs text-slate-500 mb-4">
-              Highest predicted probability customers ranked 1 to 10. Per Section 4 rules, continuous probabilities carry forward to Stage 2 and Stage 3.
+            <h3 className="text-base font-bold text-slate-900 dark:text-zinc-100 flex items-center gap-2">
+              <Activity className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+              10-Fold Cross-Validation Model Benchmark Comparison
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-zinc-400">
+              Evaluated across repeated stratified splits on 300 campaign training records. Winning model: <strong className="text-orange-600 dark:text-orange-400">avg|GB+VQC</strong>.
             </p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setActiveArchTab(activeArchTab === 'overview' ? 'vqc' : 'overview')}
+              className="text-xs font-mono px-3 py-1.5 rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 hover:bg-slate-100"
+            >
+              {activeArchTab === 'overview' ? 'Inspect Circuits' : 'View Benchmark'}
+            </button>
+          </div>
+        </div>
 
-            <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
-              {top10Customers.map((cust) => (
-                <div
-                  key={cust.customer_id}
-                  className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-orange-300 text-xs font-mono transition-colors"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 flex items-center justify-center rounded-full bg-orange-100 text-orange-800 font-bold text-[11px]">
-                      {cust.rank}
-                    </span>
-                    <span className="text-slate-800 font-semibold">#{cust.customer_id}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-orange-700 font-bold">{(cust.active_prob * 100).toFixed(1)}%</span>
-                    <span className="text-slate-600">${cust.deposit_value}</span>
-                  </div>
-                </div>
-              ))}
+        {activeArchTab === 'overview' ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs font-mono">
+              <thead className="bg-slate-50 dark:bg-zinc-900 text-slate-500 dark:text-zinc-400 border-b border-slate-200 dark:border-zinc-800">
+                <tr>
+                  <th className="py-2.5 px-3">Model</th>
+                  <th className="py-2.5 px-3">Type</th>
+                  <th className="py-2.5 px-3">ROC-AUC</th>
+                  <th className="py-2.5 px-3">PR-AUC</th>
+                  <th className="py-2.5 px-3">Precision@10</th>
+                  <th className="py-2.5 px-3">Recall@10</th>
+                  <th className="py-2.5 px-3">Brier Score</th>
+                  <th className="py-2.5 px-3">Log-Loss</th>
+                  <th className="py-2.5 px-3">ECE</th>
+                  <th className="py-2.5 px-3">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-zinc-800">
+                {(['hybrid', 'vqc', 'qfk', 'classical'] as const).map((key) => {
+                  const m = MODEL_METRICS[key];
+                  const isCurrent = activeModel === key;
+                  return (
+                    <tr
+                      key={key}
+                      onClick={() => setActiveModel(key)}
+                      className={`cursor-pointer transition-colors ${
+                        isCurrent
+                          ? 'bg-orange-50/70 dark:bg-orange-950/30 font-bold'
+                          : 'hover:bg-slate-50 dark:hover:bg-zinc-900/50'
+                      }`}
+                    >
+                      <td className="py-2.5 px-3 text-slate-900 dark:text-zinc-100 flex items-center gap-2">
+                        {key === 'hybrid' && <span className="w-2 h-2 rounded-full bg-orange-500" />}
+                        <span>{m.name}</span>
+                      </td>
+                      <td className="py-2.5 px-3">
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                          m.type === 'quantum'
+                            ? 'bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300'
+                            : m.type === 'hybrid'
+                            ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300'
+                            : 'bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300'
+                        }`}>
+                          {m.type.toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-3 text-orange-600 dark:text-orange-400 font-bold">
+                        {m.roc_auc.toFixed(4)}
+                      </td>
+                      <td className="py-2.5 px-3 text-slate-800 dark:text-zinc-200">
+                        {m.pr_auc.toFixed(4)}
+                      </td>
+                      <td className="py-2.5 px-3 text-emerald-700 dark:text-emerald-400">
+                        {(m.precision_at_k * 100).toFixed(1)}%
+                      </td>
+                      <td className="py-2.5 px-3 text-slate-700 dark:text-zinc-300">
+                        {(m.recall_at_k * 100).toFixed(1)}%
+                      </td>
+                      <td className="py-2.5 px-3 text-slate-800 dark:text-zinc-200">
+                        {m.brier_score.toFixed(4)}
+                      </td>
+                      <td className="py-2.5 px-3 text-slate-800 dark:text-zinc-200">
+                        {m.log_loss.toFixed(4)}
+                      </td>
+                      <td className="py-2.5 px-3 text-slate-700 dark:text-zinc-400">
+                        {m.ece.toFixed(4)}
+                      </td>
+                      <td className="py-2.5 px-3">
+                        {key === 'hybrid' ? (
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold border border-emerald-300 dark:border-emerald-700">
+                            Selected
+                          </span>
+                        ) : (
+                          <span className="text-slate-400 text-[10px]">Validated</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            <div className="p-4 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900/60 space-y-2">
+              <div className="flex items-center gap-2 text-xs font-mono font-bold text-orange-600 dark:text-orange-400">
+                <Cpu className="w-4 h-4" />
+                <span>Quantum Fidelity Kernel Classifier (QFK)</span>
+              </div>
+              <p className="text-xs text-slate-600 dark:text-zinc-400">
+                Encodes the top 6 standardized features into continuous rotation angles $\phi_i \in [0, \pi]$. Uses a 2-layer Pauli-ZZ feature map:
+              </p>
+              <div className="bg-white dark:bg-zinc-950 p-3 rounded-lg border border-slate-200 dark:border-zinc-800 font-mono text-[11px] text-slate-800 dark:text-zinc-200">
+                U_Φ(x) = exp(i ∑ φ_i Z_i + i ∑ (π - φ_i)(π - φ_j) Z_i Z_j)
+              </div>
+              <div className="text-[11px] text-slate-500 dark:text-zinc-400">
+                Extracts single-qubit expectation values $\langle Z_i \rangle$ and two-qubit correlation observables $\langle Z_i Z_j \rangle$ into an RBF Gram kernel.
+              </div>
             </div>
+
+            <div className="p-4 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900/60 space-y-2">
+              <div className="flex items-center gap-2 text-xs font-mono font-bold text-amber-600 dark:text-amber-400">
+                <Layers className="w-4 h-4" />
+                <span>Variational Quantum Classifier / QNN (VQC)</span>
+              </div>
+              <p className="text-xs text-slate-600 dark:text-zinc-400">
+                6-qubit data-reuploading ansatz with 3 interleaved parameterized rotation layers and circular CZ entanglement ring topology:
+              </p>
+              <div className="bg-white dark:bg-zinc-950 p-3 rounded-lg border border-slate-200 dark:border-zinc-800 font-mono text-[11px] text-slate-800 dark:text-zinc-200">
+                CZ_ring: CZ(q0, q1) · CZ(q1, q2) · ... · CZ(q5, q0)
+              </div>
+              <div className="text-[11px] text-slate-500 dark:text-zinc-400">
+                Optimized via SPSA/Adam with cross-entropy loss and Platt log-odds calibration for reliable probability outputs.
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Top 10 Candidate Pool Spotlight Banner */}
+      <div className="rounded-2xl border-2 border-orange-500/40 dark:border-orange-500/30 bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50/50 dark:from-orange-950/20 dark:via-zinc-900/40 dark:to-orange-950/20 p-5 sm:p-6 shadow-xs">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-full bg-orange-600 text-white font-mono font-bold text-xs shadow-xs">
+                Stage 1 Output
+              </span>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-zinc-100">
+                Top 10 Candidate Pool for Stage 2 Constrained Selection
+              </h2>
+            </div>
+            <p className="text-xs text-slate-600 dark:text-zinc-400 mt-1">
+              Top 10 predicted customers by probability (ties broken by customer_id ascending). Exactly 6 will be chosen in Stage 2 subject to budget $\le 25$ and capacity $\le 22$.
+            </p>
           </div>
 
           <button
             onClick={onProceedToStage2}
-            className="mt-6 w-full py-3 px-4 rounded-xl font-bold text-xs tracking-wider uppercase font-mono bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white shadow-md shadow-orange-500/20 transition-all flex items-center justify-center gap-2"
+            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 text-white font-mono text-xs font-bold hover:shadow-lg hover:shadow-orange-500/25 transition-all flex items-center gap-2 whitespace-nowrap"
           >
-            <span>Proceed to Stage 2 3D Selection</span>
+            <span>Proceed to Stage 2 Selection</span>
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
+
+        {/* 10 Candidate Chips Preview */}
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 mt-4 pt-3 border-t border-orange-200/60 dark:border-zinc-800">
+          {top10Customers.map((cust, idx) => (
+            <div
+              key={cust.customer_id}
+              className="bg-white/90 dark:bg-zinc-900/90 rounded-xl p-3 border border-orange-200/80 dark:border-zinc-800 font-mono shadow-xs hover:border-orange-400 transition-all"
+            >
+              <div className="flex justify-between items-center text-[10px] text-slate-500 dark:text-zinc-400">
+                <span className="font-bold text-orange-600 dark:text-orange-400">#{idx + 1}</span>
+                <span>{cust.customer_id}</span>
+              </div>
+              <div className="text-base font-black text-slate-900 dark:text-zinc-100 mt-1">
+                {(cust.active_prob * 100).toFixed(1)}%
+              </div>
+              <div className="flex justify-between text-[10px] text-slate-500 dark:text-zinc-400 mt-1">
+                <span>Cost: ${cust.contact_cost}</span>
+                <span>Cap: {cust.capacity_req}</span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* 100 Customer Test Dataset Table */}
-      <div className="acrylic-card rounded-2xl p-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+      {/* Test Customers Explorer Table */}
+      <div className="acrylic-card rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-zinc-800 space-y-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-              <span>Blind Test Set Predictions</span>
-              <span className="text-xs font-normal text-slate-500 font-mono">
-                ({filteredCustomers.length} of 100 customers shown)
-              </span>
+            <h3 className="text-base font-bold text-slate-900 dark:text-zinc-100">
+              Complete Test Dataset Predictions (100 Customers)
             </h3>
-            <p className="text-xs text-slate-500">
-              Ranked by continuous probability. Tie-breaker: lower customer_id first.
+            <p className="text-xs text-slate-500 dark:text-zinc-400">
+              Showing continuous probabilities calibrated from the ensemble model.
             </p>
           </div>
 
@@ -353,10 +316,10 @@ export const Stage1Predict: React.FC<Stage1PredictProps> = ({
               <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search ID (e.g. 2005)..."
+                placeholder="Search ID (e.g. C0297)..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:bg-white"
+                className="w-full bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-800 dark:text-zinc-200 placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:bg-white dark:focus:bg-zinc-950 font-mono"
               />
             </div>
 
@@ -364,8 +327,8 @@ export const Stage1Predict: React.FC<Stage1PredictProps> = ({
               onClick={() => setOnlyTop10(!onlyTop10)}
               className={`px-3 py-1.5 rounded-xl text-xs font-mono transition-colors flex items-center gap-1.5 border whitespace-nowrap ${
                 onlyTop10
-                  ? 'bg-amber-100 text-amber-800 border-amber-300 font-bold'
-                  : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                  ? 'bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700 font-bold'
+                  : 'bg-white dark:bg-zinc-900 text-slate-600 dark:text-zinc-300 border-slate-200 dark:border-zinc-800 hover:bg-slate-50'
               }`}
             >
               <Filter className="w-3.5 h-3.5" />
@@ -375,61 +338,55 @@ export const Stage1Predict: React.FC<Stage1PredictProps> = ({
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto mt-4 max-h-96">
+        <div className="overflow-x-auto max-h-96">
           <table className="w-full text-left text-xs font-mono">
-            <thead className="sticky top-0 bg-white/95 text-slate-500 border-b border-slate-200 backdrop-blur-md">
+            <thead className="sticky top-0 bg-white/95 dark:bg-zinc-950/95 text-slate-500 dark:text-zinc-400 border-b border-slate-200 dark:border-zinc-800 backdrop-blur-md">
               <tr>
                 <th className="py-2.5 px-3">Rank</th>
                 <th className="py-2.5 px-3">Customer ID</th>
-                <th className="py-2.5 px-3">VQC Prob</th>
-                <th className="py-2.5 px-3">QSVC Prob</th>
-                <th className="py-2.5 px-3">Baseline Prob</th>
+                <th className="py-2.5 px-3">Predicted Probability</th>
                 <th className="py-2.5 px-3">Expected Deposit</th>
                 <th className="py-2.5 px-3">Contact Cost</th>
                 <th className="py-2.5 px-3">Capacity Req</th>
                 <th className="py-2.5 px-3">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-zinc-800">
               {filteredCustomers.map((cust) => (
                 <tr
                   key={cust.customer_id}
-                  className={`hover:bg-slate-50 transition-colors ${
-                    cust.is_top10 ? 'bg-orange-50/40 font-medium' : ''
+                  className={`transition-colors ${
+                    cust.is_top10
+                      ? 'bg-orange-50/50 dark:bg-orange-950/30 font-medium'
+                      : 'hover:bg-slate-50 dark:hover:bg-zinc-900/50'
                   }`}
                 >
-                  <td className="py-2.5 px-3 font-bold text-slate-700">
+                  <td className="py-2.5 px-3 font-bold text-slate-700 dark:text-zinc-300">
                     #{cust.rank}
                   </td>
-                  <td className="py-2.5 px-3 font-semibold text-slate-900">
+                  <td className="py-2.5 px-3 font-semibold text-slate-900 dark:text-zinc-100">
                     {cust.customer_id}
                   </td>
-                  <td className="py-2.5 px-3 text-orange-700 font-bold">
-                    {(cust.prob_vqc * 100).toFixed(1)}%
+                  <td className="py-2.5 px-3 text-orange-600 dark:text-orange-400 font-bold">
+                    {cust.active_prob.toFixed(6)}
                   </td>
-                  <td className="py-2.5 px-3 text-amber-700">
-                    {(cust.prob_qsvc * 100).toFixed(1)}%
+                  <td className="py-2.5 px-3 text-slate-800 dark:text-zinc-200">
+                    ${cust.deposit_value}
                   </td>
-                  <td className="py-2.5 px-3 text-slate-500">
-                    {(cust.prob_baseline * 100).toFixed(1)}%
-                  </td>
-                  <td className="py-2.5 px-3 text-slate-800">
-                    ${cust.deposit_value.toLocaleString()}
-                  </td>
-                  <td className="py-2.5 px-3 text-amber-700">
+                  <td className="py-2.5 px-3 text-amber-700 dark:text-amber-400">
                     ${cust.contact_cost}
                   </td>
-                  <td className="py-2.5 px-3 text-slate-600">
-                    {cust.capacity_req} hrs
+                  <td className="py-2.5 px-3 text-slate-600 dark:text-zinc-400">
+                    {cust.capacity_req} units
                   </td>
                   <td className="py-2.5 px-3">
                     {cust.is_top10 ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-orange-100 text-orange-800 text-[10px] font-bold border border-orange-200">
-                        <CheckCircle2 className="w-3 h-3 text-orange-600" />
-                        Stage 2 Qualified
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-orange-100 dark:bg-orange-950/80 text-orange-800 dark:text-orange-300 text-[10px] font-bold border border-orange-200 dark:border-orange-800">
+                        <CheckCircle2 className="w-3 h-3 text-orange-600 dark:text-orange-400" />
+                        Stage 2 Candidate
                       </span>
                     ) : (
-                      <span className="text-slate-400 text-[10px]">Excluded</span>
+                      <span className="text-slate-400 dark:text-zinc-600 text-[10px]">Excluded</span>
                     )}
                   </td>
                 </tr>

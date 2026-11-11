@@ -6,6 +6,8 @@ import * as THREE from 'three';
 interface IsingLandscapeProps {
   gamma?: number;
   beta?: number;
+  qaoaEnergyHistory?: number[];
+  optimalBitstring?: string;
   className?: string;
 }
 
