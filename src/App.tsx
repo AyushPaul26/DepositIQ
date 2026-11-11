@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Header } from './components/common/Header';
 import { Stage1Predict } from './components/stage1/Stage1Predict';
 import { Stage2Select } from './components/stage2/Stage2Select';
@@ -11,6 +11,27 @@ import { solveExactClassical, simulateQuantumCircuit } from './utils/quantumMath
 export function App() {
   const [currentStage, setCurrentStage] = useState<number>(1);
   const [activeModel, setActiveModel] = useState<'vqc' | 'qsvc' | 'baseline'>('vqc');
+
+  // Dark mode state with persistence
+  const [isDark, setIsDark] = useState<boolean>(() => {
+    const saved = localStorage.getItem('depositiq-theme');
+    if (saved) return saved === 'dark';
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('depositiq-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('depositiq-theme', 'light');
+    }
+  }, [isDark]);
+
+  const toggleDark = () => {
+    setIsDark(prev => !prev);
+  };
 
   // Compute Stage 1 predictions based on chosen model
   const predictions = useMemo(() => {
@@ -43,8 +64,7 @@ export function App() {
   // Selected 6 customers state
   const [selectedCustomers, setSelectedCustomers] = useState<CandidateCustomer[]>(defaultSelection);
 
-  // Keep selected customers synchronized when candidate pool changes
-  React.useEffect(() => {
+  useEffect(() => {
     setSelectedCustomers(defaultSelection);
   }, [defaultSelection]);
 
@@ -55,13 +75,15 @@ export function App() {
   });
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-900 studio-grid-bg flex flex-col justify-between selection:bg-orange-500/20 selection:text-orange-900">
+    <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0f1013] text-slate-900 dark:text-zinc-100 studio-grid-bg flex flex-col justify-between selection:bg-orange-500/20 selection:text-orange-900 transition-colors duration-300">
       <div>
         <Header
           currentStage={currentStage}
           setCurrentStage={setCurrentStage}
           selectedCount={selectedCustomers.length}
           simulatedSuccessProb={simResult.quantum_prob_ge3}
+          isDark={isDark}
+          toggleDark={toggleDark}
         />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -102,16 +124,16 @@ export function App() {
       </div>
 
       {/* Architectural Studio Footer */}
-      <footer className="border-t border-slate-200 bg-white/80 py-6 mt-12 text-xs font-mono text-slate-500 backdrop-blur-md">
+      <footer className="border-t border-slate-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 py-6 mt-12 text-xs font-mono text-slate-500 dark:text-zinc-400 backdrop-blur-md transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-orange-500" />
-            <span className="text-slate-800 font-bold">DepositIQ</span>
+            <span className="text-slate-800 dark:text-zinc-100 font-bold">DepositIQ</span>
             <span>— The ATOMIQ Hackathon Technical Challenge</span>
           </div>
-          <div className="flex items-center gap-4 text-slate-600">
-            <span>Branch: <strong className="text-orange-700">ayush</strong></span>
-            <span>Repository: <strong className="text-slate-900">Mayank2177/DepositIQ</strong></span>
+          <div className="flex items-center gap-4 text-slate-600 dark:text-zinc-400">
+            <span>Branch: <strong className="text-orange-700 dark:text-orange-400">ayush</strong></span>
+            <span>Repository: <strong className="text-slate-900 dark:text-zinc-200">Mayank2177/DepositIQ</strong></span>
             <span>Three.js / React 18 / WebGL</span>
           </div>
         </div>

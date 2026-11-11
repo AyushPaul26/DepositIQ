@@ -76,7 +76,7 @@ export const IsingLandscape3D: React.FC<IsingLandscapeProps> = ({
   className = 'w-full h-56',
 }) => {
   return (
-    <div className={`relative ${className} bg-white rounded-xl border border-slate-200 overflow-hidden`}>
+    <div className={`relative ${className} bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 overflow-hidden`}>
       <Canvas
         camera={{ position: [0, -3.2, 2.5], fov: 45 }}
         dpr={[1, 1.5]}
@@ -89,7 +89,7 @@ export const IsingLandscape3D: React.FC<IsingLandscapeProps> = ({
         <GroundStateMarker />
         <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={0.5} />
       </Canvas>
-      <div className="absolute top-2 right-2 bg-white/95 px-2.5 py-0.5 rounded border border-slate-200 text-[10px] font-mono text-orange-700 shadow-sm pointer-events-none">
+      <div className="absolute top-2 right-2 bg-white/95 dark:bg-zinc-900/95 px-2.5 py-0.5 rounded border border-slate-200 dark:border-zinc-800 text-[10px] font-mono text-orange-700 dark:text-orange-400 shadow-sm pointer-events-none">
         QUBO Cost Landscape H(x)
       </div>
     </div>

@@ -100,7 +100,7 @@ function CustomerPuck({
           className={`px-2 py-0.5 rounded text-[10px] font-mono cursor-pointer transition-all whitespace-nowrap shadow-sm border ${
             isSelected
               ? 'bg-orange-600 text-white border-orange-700 font-bold shadow-orange-500/20 scale-105'
-              : 'bg-white/95 text-slate-700 border-slate-300 hover:border-orange-400'
+              : 'bg-white/95 dark:bg-zinc-900/95 text-slate-700 dark:text-zinc-300 border-slate-300 dark:border-zinc-700 hover:border-orange-400'
           }`}
         >
           #{customer.customer_id} ({(customer.probability * 100).toFixed(0)}%)
@@ -208,7 +208,7 @@ export const QuantumWorkbench3D: React.FC<QuantumWorkbench3DProps> = ({
   const selectedList = candidates.filter((c) => selectedIds.has(c.customer_id));
 
   return (
-    <div className={`relative ${className} rounded-2xl overflow-hidden bg-gradient-to-b from-white via-slate-50 to-orange-50/30 border border-slate-200/80 shadow-soft-card`}>
+    <div className={`relative ${className} rounded-2xl overflow-hidden bg-gradient-to-b from-white via-slate-50 to-orange-50/30 dark:from-zinc-900 dark:via-zinc-950 dark:to-orange-950/20 border border-slate-200/80 dark:border-zinc-800 shadow-soft-card`}>
       <Canvas
         camera={{ position: [0, 4.8, 5.8], fov: 42 }}
         dpr={[1, 2]}
@@ -248,14 +248,14 @@ export const QuantumWorkbench3D: React.FC<QuantumWorkbench3DProps> = ({
       </Canvas>
 
       {/* Top Overlay Pill */}
-      <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-2 text-xs font-mono">
+      <div className="absolute top-3 left-3 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-sm flex items-center gap-2 text-xs font-mono">
         <span className="w-2.5 h-2.5 rounded-full bg-orange-500 animate-pulse" />
-        <span className="font-bold text-slate-800">3D Spatial Workbench:</span>
-        <span className="text-orange-600 font-semibold">{selectedList.length} / 6 Bays Docked</span>
+        <span className="font-bold text-slate-800 dark:text-zinc-200">3D Spatial Workbench:</span>
+        <span className="text-orange-600 dark:text-orange-400 font-semibold">{selectedList.length} / 6 Bays Docked</span>
       </div>
 
       {/* Interaction Help Pill */}
-      <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-md px-3 py-1 rounded-lg border border-slate-200 text-[11px] font-mono text-slate-600 shadow-sm pointer-events-none">
+      <div className="absolute bottom-3 right-3 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md px-3 py-1 rounded-lg border border-slate-200 dark:border-zinc-800 text-[11px] font-mono text-slate-600 dark:text-zinc-400 shadow-sm pointer-events-none">
         Click pucks to dock • Drag to rotate
       </div>
     </div>

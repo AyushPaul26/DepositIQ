@@ -94,7 +94,7 @@ export const BlochSphere3D: React.FC<BlochSphereProps> = ({
   className = 'w-full h-44',
 }) => {
   return (
-    <div className={`relative ${className} group cursor-grab active:cursor-grabbing bg-white/80 rounded-xl border border-slate-200 overflow-hidden`}>
+    <div className={`relative ${className} group cursor-grab active:cursor-grabbing bg-white/80 dark:bg-zinc-900/80 rounded-xl border border-slate-200 dark:border-zinc-800 overflow-hidden`}>
       <Canvas
         camera={{ position: [2.2, 1.4, 2.5], fov: 45 }}
         dpr={[1, 1.5]}
@@ -102,7 +102,7 @@ export const BlochSphere3D: React.FC<BlochSphereProps> = ({
       >
         <ambientLight intensity={1.5} />
         <pointLight position={[4, 5, 4]} intensity={1.8} color="#ffffff" />
-        <pointLight position={[-4, -3, -4]} intensity={0.8} color="#ffedd5" />
+        <pointLight position={[-4, -3, -4]} intensity={0.8} color="#fed7aa" />
 
         {/* Optical Translucent Glass Sphere */}
         <mesh>
@@ -137,18 +137,18 @@ export const BlochSphere3D: React.FC<BlochSphereProps> = ({
       </Canvas>
 
       {/* Header overlay */}
-      <div className="absolute top-2 left-2 pointer-events-none flex items-center gap-1.5 bg-white/95 px-2 py-0.5 rounded border border-slate-200 shadow-sm">
+      <div className="absolute top-2 left-2 pointer-events-none flex items-center gap-1.5 bg-white/95 dark:bg-zinc-900/95 px-2 py-0.5 rounded border border-slate-200 dark:border-zinc-800 shadow-sm">
         <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-        <span className="text-[11px] font-mono font-bold text-slate-800">{qubitLabel}</span>
+        <span className="text-[11px] font-mono font-bold text-slate-800 dark:text-zinc-200">{qubitLabel}</span>
         {customerId && (
-          <span className="text-[10px] text-slate-500 font-mono">#{customerId}</span>
+          <span className="text-[10px] text-slate-500 dark:text-zinc-400 font-mono">#{customerId}</span>
         )}
       </div>
 
       {/* Bottom overlay: rotation info */}
-      <div className="absolute bottom-2 left-2 right-2 pointer-events-none flex justify-between items-center bg-white/95 px-2 py-1 rounded border border-slate-200 text-[10px] font-mono shadow-sm">
-        <span className="text-slate-600">θ = {(theta * 180 / Math.PI).toFixed(1)}°</span>
-        <span className="text-orange-600 font-bold">P(|1⟩) = {(probability * 100).toFixed(1)}%</span>
+      <div className="absolute bottom-2 left-2 right-2 pointer-events-none flex justify-between items-center bg-white/95 dark:bg-zinc-900/95 px-2 py-1 rounded border border-slate-200 dark:border-zinc-800 text-[10px] font-mono shadow-sm">
+        <span className="text-slate-600 dark:text-zinc-400">θ = {(theta * 180 / Math.PI).toFixed(1)}°</span>
+        <span className="text-orange-600 dark:text-orange-400 font-bold">P(|1⟩) = {(probability * 100).toFixed(1)}%</span>
       </div>
     </div>
   );
