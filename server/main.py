@@ -142,6 +142,32 @@ class Stage3SimulateRequest(BaseModel):
     shots: int = 4096
     noise: bool = False
 
+@app.get("/api/stage3/benchmarks")
+def get_stage3_benchmarks():
+    """Returns the multi-regime simulation benchmarks from stage3-simulate.ipynb"""
+    return [
+        {"method": "Exact Poisson-binomial", "regime": "exact", "mean": 0.725777, "std": 0.0, "bias": 0.0, "RMSE": 0.0},
+        {"method": "Ideal statevector (circuit)", "regime": "ideal device", "mean": 0.725777, "std": 0.0, "bias": 0.0, "RMSE": 0.0},
+        {"method": "MLAE amplitude estimation (≈100k shots)", "regime": "ideal device", "mean": 0.725788, "std": 0.000087, "bias": 0.000012, "RMSE": 0.000086},
+        {"method": "Noiseless circuit shots (100k)", "regime": "ideal device", "mean": 0.725622, "std": 0.001687, "bias": -0.000155, "RMSE": 0.001666},
+        {"method": "Classical Monte-Carlo (100k trials)", "regime": "classical", "mean": 0.725662, "std": 0.001540, "bias": -0.000115, "RMSE": 0.001518},
+        {"method": "Noisy circuit (raw)", "regime": "noisy device", "mean": 0.681950, "std": 0.001459, "bias": -0.043827, "RMSE": 0.043850},
+        {"method": "Noisy + readout-mitigated", "regime": "noisy device", "mean": 0.724050, "std": 0.001425, "bias": -0.001726, "RMSE": 0.002224},
+        {"method": "Noisy + readout-mitigated + ZNE", "regime": "noisy device", "mean": 0.725877, "std": 0.003112, "bias": 0.000100, "RMSE": 0.003061},
+    ]
+
+@app.get("/api/stage3/qubit-map")
+def get_stage3_qubit_map():
+    """Returns ascending customer_id to qubit mapping (q0..q5)"""
+    return [
+        {"qubit": "q0", "customer_id": "C0017", "p_stage1": 0.35, "theta_RY_rad": 1.266104},
+        {"qubit": "q1", "customer_id": "C0073", "p_stage1": 0.62, "theta_RY_rad": 1.813162},
+        {"qubit": "q2", "customer_id": "C0107", "p_stage1": 0.58, "theta_RY_rad": 1.731487},
+        {"qubit": "q3", "customer_id": "C0281", "p_stage1": 0.51, "theta_RY_rad": 1.590798},
+        {"qubit": "q4", "customer_id": "C0297", "p_stage1": 0.45, "theta_RY_rad": 1.470629},
+        {"qubit": "q5", "customer_id": "C0311", "p_stage1": 0.70, "theta_RY_rad": 1.982313},
+    ]
+
 @app.post("/api/stage3/simulate")
 def run_stage3_simulation(req: Stage3SimulateRequest):
     """
@@ -172,11 +198,14 @@ def run_stage3_simulation(req: Stage3SimulateRequest):
         "customer_ids": req.customer_ids,
         "probabilities": probs,
         "ry_angles_radians": ry_angles,
-        "exact_prob_ge3": round(prob_ge3, 4),
-        "distribution": [round(x, 4) for x in dp],
+        "exact_prob_ge3": round(prob_ge3, 6),
+        "distribution": [round(x, 6) for x in dp],
+        "best_ideal_estimator": "MLAE amplitude estimation (≈100k shots)",
+        "best_noisy_estimator": "Noisy + readout-mitigated",
         "modular_slot": "Ready to plug in stage3 notebook statevector/qiskit routine"
     }
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+

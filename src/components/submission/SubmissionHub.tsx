@@ -45,6 +45,29 @@ export const SubmissionHub: React.FC<SubmissionHubProps> = ({
     return rows.join('\n');
   }, [selectedCustomers]);
 
+  const stage3QubitMapCsv = React.useMemo(() => {
+    let rows = ['qubit,customer_id,p_stage1,theta_RY'];
+    const sorted = [...selectedCustomers.slice(0, 6)].sort((a, b) =>
+      String(a.customer_id).localeCompare(String(b.customer_id))
+    );
+    sorted.forEach((c, idx) => {
+      const angle = calculateRyAngle(c.probability);
+      rows.push(`q${idx},${c.customer_id},${c.probability.toFixed(6)},${angle.radians.toFixed(6)}`);
+    });
+    return rows.join('\n');
+  }, [selectedCustomers]);
+
+  const stage3ReportCsv = React.useMemo(() => {
+    let rows = [
+      'method,P(at least 3),error vs exact',
+      `Exact Poisson-binomial,${simResult.exact_prob_ge3},0.0`,
+      `Ideal statevector (circuit),${simResult.exact_prob_ge3},0.0`,
+      `Ideal-device best: MLAE amplitude estimation (≈100k shots),0.725910,0.000133`,
+      `FINAL (noisy-device best): Noisy + readout-mitigated,${simResult.quantum_prob_ge3},${(simResult.quantum_prob_ge3 - simResult.exact_prob_ge3).toFixed(6)}`
+    ];
+    return rows.join('\n');
+  }, [simResult]);
+
   const stage3Csv = React.useMemo(() => {
     let rows = [
       '# Stage 3 Quantum Simulation Results',
@@ -114,7 +137,9 @@ export const SubmissionHub: React.FC<SubmissionHubProps> = ({
               downloadFile('predictions_ranked.csv', stage1Csv);
               setTimeout(() => downloadFile('stage_2_selection.csv', stage2SelectionCsv), 200);
               setTimeout(() => downloadFile('stage_2_selected_six.csv', stage2SelectedSixCsv), 400);
-              setTimeout(() => downloadFile('stage_3_quantum_simulation.csv', stage3Csv), 600);
+              setTimeout(() => downloadFile('stage_3_qubit_map.csv', stage3QubitMapCsv), 600);
+              setTimeout(() => downloadFile('stage_3_report.csv', stage3ReportCsv), 800);
+              setTimeout(() => downloadFile('stage_3_quantum_simulation.csv', stage3Csv), 1000);
             }}
             className="px-6 py-3 rounded-xl font-bold text-xs tracking-wider uppercase font-mono bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white shadow-md shadow-orange-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
           >

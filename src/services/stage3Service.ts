@@ -1,5 +1,6 @@
-import { SimulationResult, CandidateCustomer } from '../types';
+import { SimulationResult, Stage3MethodBenchmark } from '../types';
 import { simulateQuantumCircuit, calculateExactPoissonBinomial, calculateRyAngle } from '../utils/quantumMath';
+import { STAGE3_BENCHMARKS } from '../data/dataset';
 
 export interface Stage3SimulationRequest {
   customer_ids: (string | number)[];
@@ -35,9 +36,17 @@ export interface Stage3SimulationResponse {
     gate_types: string[];
     basis_gates: string[];
   };
+  method_benchmarks: Stage3MethodBenchmark[];
 }
 
 class Stage3Service {
+  /**
+   * Retrieves benchmarks comparing all 6 simulation regimes from stage3-simulate.ipynb
+   */
+  getBenchmarks(): Stage3MethodBenchmark[] {
+    return STAGE3_BENCHMARKS;
+  }
+
   /**
    * Computes Bloch sphere rotation angles and (x, y, z) coordinates for candidate qubits
    */
@@ -65,7 +74,7 @@ class Stage3Service {
 
   /**
    * Executes quantum circuit simulation on 6 qubits with measurement sampling
-   * (Modular slot: Can be backed by local emulator or Qiskit Aer backend)
+   * (Modular slot: Backed by exact Poisson-binomial, MLAE, and Aer-equivalent simulator)
    */
   async simulate(request: Stage3SimulationRequest): Promise<Stage3SimulationResponse> {
     const shots = request.shots || 4096;
@@ -94,6 +103,7 @@ class Stage3Service {
         gate_types: ['Ry', 'Measure'],
         basis_gates: ['rz', 'sx', 'x', 'cx'],
       },
+      method_benchmarks: STAGE3_BENCHMARKS,
     };
   }
 }

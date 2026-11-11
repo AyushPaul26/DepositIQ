@@ -93,6 +93,17 @@ export interface QaoaParameters {
   penalty_capacity: number;
 }
 
+export interface Stage3MethodBenchmark {
+  method: string;
+  regime: 'exact' | 'ideal device' | 'classical' | 'noisy device';
+  is_quantum: boolean;
+  mean: number;
+  std: number;
+  bias: number;
+  rmse: number;
+  description: string;
+}
+
 export interface SimulationResult {
   shots: number;
   quantum_prob_ge3: number;

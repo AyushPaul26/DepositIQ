@@ -1,4 +1,4 @@
-import { CustomerFeature, PredictionResult, ModelMetrics, Stage2Constraints, CandidateCustomer, SolverBenchmark } from '../types';
+import { CustomerFeature, PredictionResult, ModelMetrics, Stage2Constraints, CandidateCustomer, SolverBenchmark, Stage3MethodBenchmark } from '../types';
 
 export const STAGE2_CONSTRAINTS: Stage2Constraints = {
   candidate_pool_size: 10,
@@ -386,3 +386,88 @@ export function computePredictions(activeModel: 'hybrid' | 'vqc' | 'qfk' | 'clas
     is_top10: idx < 10,
   }));
 }
+
+// Stage 3 multi-regime benchmarks from stage3-simulate.ipynb Cell 7 & 8
+export const STAGE3_BENCHMARKS: Stage3MethodBenchmark[] = [
+  {
+    method: 'Exact Poisson-binomial',
+    regime: 'exact',
+    is_quantum: false,
+    mean: 0.725777,
+    std: 0.0,
+    bias: 0.0,
+    rmse: 0.0,
+    description: 'Analytical closed-form dynamic programming & 64-state basis summation. Ground truth reference.'
+  },
+  {
+    method: 'Ideal statevector (circuit)',
+    regime: 'ideal device',
+    is_quantum: true,
+    mean: 0.725777,
+    std: 0.0,
+    bias: 0.0,
+    rmse: 0.0,
+    description: 'Exact statevector |ψ⟩ = ⨂ RY(θ_k)|0⟩; sum of 42 good basis states (Hamming weight ≥ 3).'
+  },
+  {
+    method: 'MLAE amplitude estimation (≈100k shots)',
+    regime: 'ideal device',
+    is_quantum: true,
+    mean: 0.725788,
+    std: 0.000087,
+    bias: 0.000012,
+    rmse: 0.000086,
+    description: 'Maximum Likelihood Amplitude Estimation via Grover iterations Q = A S0 A† S_χ. Best estimator on ideal device.'
+  },
+  {
+    method: 'Noiseless circuit shots (100k)',
+    regime: 'ideal device',
+    is_quantum: true,
+    mean: 0.725622,
+    std: 0.001687,
+    bias: -0.000155,
+    rmse: 0.001666,
+    description: 'Finite-shot sampling from ideal quantum circuit (100,000 shots).'
+  },
+  {
+    method: 'Classical Monte-Carlo (100k trials)',
+    regime: 'classical',
+    is_quantum: false,
+    mean: 0.725662,
+    std: 0.001540,
+    bias: -0.000115,
+    rmse: 0.001518,
+    description: '100,000 independent classical Bernoulli trials per customer.'
+  },
+  {
+    method: 'Noisy circuit (raw)',
+    regime: 'noisy device',
+    is_quantum: true,
+    mean: 0.681950,
+    std: 0.001459,
+    bias: -0.043827,
+    rmse: 0.043850,
+    description: 'Depolarising gate noise (ε=0.02) + asymmetric readout error (P(1|0)=0.02, P(0|1)=0.06).'
+  },
+  {
+    method: 'Noisy + readout-mitigated',
+    regime: 'noisy device',
+    is_quantum: true,
+    mean: 0.724050,
+    std: 0.001425,
+    bias: -0.001726,
+    rmse: 0.002224,
+    description: 'Tensor-product calibration matrix inversion from |0…0⟩ and |1…1⟩ calibration circuits. Best estimator on noisy device.'
+  },
+  {
+    method: 'Noisy + readout-mitigated + ZNE',
+    regime: 'noisy device',
+    is_quantum: true,
+    mean: 0.725877,
+    std: 0.003112,
+    bias: 0.000100,
+    rmse: 0.003061,
+    description: 'Richardson quadratic zero-noise extrapolation with scale factors c ∈ {1, 3, 5}.'
+  }
+];
+
